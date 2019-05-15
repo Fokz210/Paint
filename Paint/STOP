@@ -1,0 +1,10 @@
+< palleteXML >
+	< mySettings >
+		< kek value = lol >
+		</ kek >
+	</ mySettings >
+	< lol >
+		< kek value = 20 >
+		</ kek >
+	</ lol >
+</ palleteXML >

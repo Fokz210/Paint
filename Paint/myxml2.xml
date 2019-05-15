@@ -1,0 +1,16 @@
+< palleteXML >
+	< globalSettings >
+		< brush >
+			< pos value = 0 >
+			</ pos >
+			< size value = 10 >
+			</ size >
+		</ brush >
+		< pencil >
+			< pos value = 0 >
+			</ pos >
+			< size value = 10 >
+			</ size >
+		</ pencil >
+	</ globalSettings >
+</ palleteXML >

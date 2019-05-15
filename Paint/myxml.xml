@@ -1,0 +1,16 @@
+< palleteXML >
+	< mySettings >
+		< kek value = lol >
+		</ kek >
+	</ mySettings >
+	< folder >
+	</ folder >
+	< lol >
+		< cheburek value = aga >
+		</ cheburek >
+	</ lol >
+	< kek >
+		< gospodin value = ugu >
+		</ gospodin >
+	</ kek >
+</ palleteXML >
