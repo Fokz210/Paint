@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -23,6 +23,7 @@
     <ProjectGuid>{AF1A8768-2096-4325-9DF0-687C7C8A196C}</ProjectGuid>
     <RootNamespace>Paint</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Inheritance</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -123,6 +124,7 @@
   <ItemGroup>
     <ClInclude Include="..\Include\StandardCursor.h" />
     <ClInclude Include="..\Include\WinManager.h" />
+    <ClInclude Include="PersonButton.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Include\AbstFilter.cpp" />
@@ -140,6 +142,8 @@
     <ClCompile Include="InstData.cpp" />
     <ClCompile Include="Palette.cpp" />
     <ClCompile Include="PaletteWnd.cpp" />
+    <ClCompile Include="Person.cpp" />
+    <ClCompile Include="PersonButton.cpp" />
     <ClCompile Include="RectWnd.cpp" />
     <ClCompile Include="SlidingWnd.cpp" />
     <ClCompile Include="Source.cpp" />

@@ -31,7 +31,7 @@ sf::SpriteWnd::SpriteWnd (float x, float y, float width, float height, Texture t
 
 void sf::SpriteWnd::Draw(RenderWindow * wnd)
 {
-	if (isActive)
+	if (false)
 	{
 		RectangleShape shape;
 		shape.setPosition (sprite_.getPosition ());
