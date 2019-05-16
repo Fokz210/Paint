@@ -24,6 +24,12 @@
     <ClInclude Include="PersonButton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="InheritanceCalc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Person.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Include\AbstFilter.cpp">
@@ -102,6 +108,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Person.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InheritanceCalc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

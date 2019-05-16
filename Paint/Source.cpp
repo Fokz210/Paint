@@ -8,7 +8,7 @@
 #include "../Include/TagTree.h"
 
 
-
+#include "InheritanceCalc.h"
 #include "PersonButton.h"
 
 
@@ -18,29 +18,31 @@ bool run (sf::RenderWindow& window)
 
 	sf::WindowManager manager;
 
-	sf::Image img1, img2, img3, img4;
+	sf::Image img1, img2, img3, img4, img5;
 	img1.create (100, 90, sf::Color::Transparent);
 	img2.loadFromFile ("+.png");
 	img3.loadFromFile ("Background.png");
 	img4.loadFromFile ("ADD.png");
+	img5.loadFromFile ("rip.png");
 
-	sf::Texture iconTexture, linkTexture, btnTexture, addTexture;
+	sf::Texture iconTexture, linkTexture, btnTexture, addTexture, killTexture;
 	iconTexture.loadFromImage (img1);
 	linkTexture.loadFromImage (img2);
 	btnTexture.loadFromImage (img3);
 	addTexture.loadFromImage (img4);
+	killTexture.loadFromImage (img5);
 
-	sf::Sprite iconSprite (iconTexture), addSprite (addTexture), btnSprite (btnTexture), linkSprite (linkTexture);
+	sf::Sprite iconSprite (iconTexture), addSprite (addTexture), btnSprite (btnTexture), linkSprite (linkTexture), killSprite (killTexture);
 
-	Person inheritant ("", 0, 0);
+	Person inheritant ("", 0, 100);
+	sf::Font font;
+	font.loadFromFile ("bin//font.ttf");
 
-	sf::PersonButton button (btnSprite, linkSprite, iconSprite, &inheritant, &manager);
+	sf::PersonButton button (btnSprite, linkSprite, iconSprite, killSprite, &inheritant, &manager, font);
 	manager.AddWindow (&button);
 	button.IntegrateButtons ();
 	auto lambda1 = [&]() { restart = true; };
 
-	sf::Font font;
-	font.loadFromFile ("bin//font.ttf");
 
 	sf::Text text;
 	text.setFont (font);
@@ -53,10 +55,18 @@ bool run (sf::RenderWindow& window)
 
 	addSprite.setPosition (window.getSize ().x / 2 - addSprite.getLocalBounds ().width / 2, 20);
 
-	sf::AddPersonButton addBtn (addSprite, &manager, linkSprite, iconSprite, btnSprite);
+	sf::AddPersonButton addBtn (addSprite, &manager, linkSprite, iconSprite, btnSprite, killSprite, font);
 	manager.AddWindow (&addBtn);
 
 	inheritant.btnSprite_ = button.GetSprite ();
+
+	InheritanceCalc calc (&inheritant);
+
+	auto calclabmbda = [&]() { calc.UpdateFinances (); };
+
+	text.setString ("CALC");
+	sf::Button  <decltype (calclabmbda)> calcBtn (window.getSize ().x / 2 - addSprite.getLocalBounds ().width / 2, 200, 150, 50, sf::Color::Red, text, calclabmbda);
+	manager.AddWindow (&calcBtn);
 
 	while (window.isOpen ())
 	{

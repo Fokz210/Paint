@@ -45,13 +45,12 @@ namespace sf
 		return true;
 	}
 
-
 	Sprite & LinkPersonButton::getSprite ()
 	{
 		return sprite_;
 	}
 
-	PersonButton::PersonButton (Sprite sprite, Sprite addBtnSprite, Sprite iconSprite, Person* person, WindowManager * manager, Font font) :
+	PersonButton::PersonButton (Sprite sprite, Sprite addBtnSprite, Sprite iconSprite, Sprite killSprite, Person* person, WindowManager * manager, Font font) :
 		SpriteWnd	 (sprite),
 		person_		 (person),
 		addChildren_ (nullptr),
@@ -60,10 +59,14 @@ namespace sf
 		manager_	 (manager),
 		holding_	 (false),
 		msdelta_	 (),
-		font_		 (font)
+		font_		 (font),
+		kill_		 (nullptr)
 	{
 		addBtnSprite.setPosition (sprite.getPosition ());
 		addParents_ = new LinkPersonButton (addBtnSprite, sprite, iconSprite, person, manager, parents);
+
+		killSprite.setPosition (sprite_.getPosition ().x + addBtnSprite.getLocalBounds ().width - killSprite.getLocalBounds ().width, sprite_.getPosition ().y + addBtnSprite.getLocalBounds ().height);
+		kill_ = new KillPersonButton (killSprite, person_);
 
 		addBtnSprite.setPosition (Vector2f (sprite.getPosition ().x, sprite.getPosition ().y + sprite.getLocalBounds ().height - addBtnSprite.getLocalBounds ().height));
 		addChildren_ = new LinkPersonButton (addBtnSprite, sprite, iconSprite, person, manager, children);
@@ -75,6 +78,7 @@ namespace sf
 	{
 		manager_->AddWindow (addParents_);
 		manager_->AddWindow (addChildren_);
+		manager_->AddWindow (kill_);
 	}
 
 	bool PersonButton::OnClick (Event::MouseButtonEvent event)
@@ -102,6 +106,7 @@ namespace sf
 			addParents_->getSprite ().setPosition (sprite_.getPosition ());
 			addChildren_->getSprite ().setPosition (Vector2f (sprite_.getPosition ().x, sprite_.getPosition ().y + sprite_.getLocalBounds ().height - addChildren_->getSprite ().getLocalBounds ().height));
 			icon_.setPosition (Vector2f (sprite_.getPosition ().x, sprite_.getPosition ().y + addParents_->getSprite ().getLocalBounds ().height));
+			kill_->GetSprite ().setPosition (sprite_.getPosition ().x + 100 - kill_->GetSprite ().getLocalBounds ().width, sprite_.getPosition ().y + 25);
 		}
 
 		SpriteWnd::Draw (wnd);
@@ -109,7 +114,21 @@ namespace sf
 		wnd->draw (icon_);
 
 		sf::Text text;
-		
+		text.setFont (font_);
+		text.setString (std::to_string ((int)person_->finances_));
+		text.setOrigin (text.getLocalBounds ().width / 2, text.getLocalBounds ().height / 2);
+		text.setPosition (sprite_.getPosition ().x + sprite_.getLocalBounds ().width / 2, sprite_.getPosition ().y + sprite_.getLocalBounds ().height / 2);
+		text.setFillColor (Color::Magenta);
+
+		wnd->draw (text);
+
+		if (person_->dead_)
+		{
+			text.setString ("DEAD");
+			text.setPosition (text.getPosition ().x + 130, text.getPosition ().y);
+			text.setFillColor (Color::Red);
+			wnd->draw (text);
+		}
 
 		sf::Vector2f mid1 = sf::Vector2f (sprite_.getPosition ().x + sprite_.getLocalBounds ().width / 2.0f, sprite_.getPosition ().y + sprite_.getLocalBounds ().height);
 
@@ -141,13 +160,15 @@ namespace sf
 		return &sprite_;
 	}
 
-	AddPersonButton::AddPersonButton (Sprite sprite, WindowManager* manager, Sprite addBtnSprite, Sprite iconSprite, Sprite background) :
-		SpriteWnd	  (sprite),
-		manager_	  (manager),
-		addBtnSprite_ (addBtnSprite),
-		iconSprite_   (iconSprite),
-		background_   (background),
-		people_		  ()
+	AddPersonButton::AddPersonButton (Sprite sprite, WindowManager* manager, Sprite addBtnSprite, Sprite iconSprite, Sprite background, Sprite killBtnSprite, Font font) :
+		SpriteWnd	   (sprite),
+		manager_	   (manager),
+		addBtnSprite_  (addBtnSprite),
+		iconSprite_    (iconSprite),
+		background_    (background),
+		killBtnSprite_ (killBtnSprite),
+		people_		   (),
+		font_		   (font)
 	{
 
 	}
@@ -160,11 +181,11 @@ namespace sf
 
 	bool AddPersonButton::OnClick (Event::MouseButtonEvent event)
 	{
-		Person* person = new Person ("", false, 1, nullptr);
+		Person* person = new Person ("", false, 0, nullptr);
 
 		background_.setPosition (sf::Vector2f ());
 
-		PersonButton* btn = new PersonButton (background_, addBtnSprite_, iconSprite_, person, manager_);
+		PersonButton* btn = new PersonButton (background_, addBtnSprite_, iconSprite_, killBtnSprite_, person, manager_, font_);
 		manager_->AddWindow (btn);
 		btn->IntegrateButtons ();
 		person->btnSprite_ = btn->GetSprite ();
@@ -172,5 +193,23 @@ namespace sf
 		people_.push_back (person);
 
 		return true;
+	}
+
+	KillPersonButton::KillPersonButton (Sprite sprite, Person* person) :
+		SpriteWnd (sprite),
+		person_ (person)
+	{
+	}
+
+	bool KillPersonButton::OnClick (Event::MouseButtonEvent event)
+	{
+		person_->dead_ = true;
+
+		return true;
+	}
+
+	Sprite& KillPersonButton::GetSprite ()
+	{
+		return sprite_;
 	}
 }

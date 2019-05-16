@@ -9,9 +9,16 @@ public:
 
 	void UpdateFinances ();
 
-protected:
+	int searchHers ();
+
 	Person* person_;
-	 
-	int checkLevel	 (Person* person);
+
+	bool Empty ();
+
+
+protected:
+
+
+
 };
 

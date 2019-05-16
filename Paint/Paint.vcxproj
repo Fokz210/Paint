@@ -124,6 +124,8 @@
   <ItemGroup>
     <ClInclude Include="..\Include\StandardCursor.h" />
     <ClInclude Include="..\Include\WinManager.h" />
+    <ClInclude Include="InheritanceCalc.h" />
+    <ClInclude Include="Person.h" />
     <ClInclude Include="PersonButton.h" />
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +141,7 @@
     <ClCompile Include="ContrastFilter.cpp" />
     <ClCompile Include="DllLoader.cpp" />
     <ClCompile Include="Graph.cpp" />
+    <ClCompile Include="InheritanceCalc.cpp" />
     <ClCompile Include="InstData.cpp" />
     <ClCompile Include="Palette.cpp" />
     <ClCompile Include="PaletteWnd.cpp" />
