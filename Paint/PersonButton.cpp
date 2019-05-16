@@ -2,8 +2,10 @@
 
 namespace sf
 {
+	
+	__KOSTYL__ADDITIONAL__ KOSTYL = {};
 
-	AddPersonButton::AddPersonButton (Sprite sprite, Sprite PersonBtnSprite, Sprite iconSprite, Person * person, WindowManager * manager, relatives currrent) :
+	LinkPersonButton::LinkPersonButton (Sprite sprite, Sprite PersonBtnSprite, Sprite iconSprite, Person * person, WindowManager * manager, relatives currrent) :
 		SpriteWnd		  (sprite),
 		person_			  (person),
 		PersonBtnSprite_  (PersonBtnSprite),
@@ -13,48 +15,43 @@ namespace sf
 	{
 	}
 
-	StandardCursor::TYPE sf::AddPersonButton::GetCursorType ()
+	StandardCursor::TYPE sf::LinkPersonButton::GetCursorType ()
 	{
 		return StandardCursor::TYPE::HAND;
 	}
 
-	bool AddPersonButton::OnClick (Event::MouseButtonEvent event)
+	bool LinkPersonButton::OnClick (Event::MouseButtonEvent event)
 	{
-		Person* person = new Person ("", false, 1, nullptr);
-
-		switch (currentRelatives_)
+		if (!KOSTYL.p1)
+			KOSTYL = { person_, currentRelatives_ };
+		else if (KOSTYL.r1 == currentRelatives_ || KOSTYL.p1 == person_)
+			KOSTYL = {};
+		else
 		{
-		case parents:
-			person->children_.push_back (person_);
-			person_->parents_.push_back (person);
-			PersonBtnSprite_.setPosition (sf::Vector2f (sprite_.getPosition ().x, sprite_.getPosition ().y - 110));
-			break;
+			if (currentRelatives_ == children)
+			{
+				KOSTYL.p1->parents_.push_back (person_);
+				person_->children_.push_back (KOSTYL.p1);
+			}
+			else
+			{
+				KOSTYL.p1->children_.push_back (person_);
+				person_->parents_.push_back (KOSTYL.p1);
+			}
 
-		case children:
-			person->parents_.push_back (person_);
-			person_->children_.push_back (person);
-			PersonBtnSprite_.setPosition (sf::Vector2f (sprite_.getPosition ().x, sprite_.getPosition ().y + 40));
-			break;
-
-		default:
-			break;
+			KOSTYL = {};
 		}
-
-		PersonButton* btn = new PersonButton (PersonBtnSprite_, sprite_, iconSprite_, person, manager_);
-		manager_->AddWindow (btn);
-		btn->IntegrateButtons ();
-		person->btnSprite_ = btn->GetSprite ();
-
+		
 		return true;
 	}
 
 
-	Sprite & AddPersonButton::getSprite ()
+	Sprite & LinkPersonButton::getSprite ()
 	{
 		return sprite_;
 	}
 
-	PersonButton::PersonButton (Sprite sprite, Sprite addBtnSprite, Sprite iconSprite, Person* person, WindowManager * manager) :
+	PersonButton::PersonButton (Sprite sprite, Sprite addBtnSprite, Sprite iconSprite, Person* person, WindowManager * manager, Font font) :
 		SpriteWnd	 (sprite),
 		person_		 (person),
 		addChildren_ (nullptr),
@@ -62,13 +59,14 @@ namespace sf
 		icon_		 (iconSprite),
 		manager_	 (manager),
 		holding_	 (false),
-		msdelta_	 ()
+		msdelta_	 (),
+		font_		 (font)
 	{
 		addBtnSprite.setPosition (sprite.getPosition ());
-		addParents_ = new AddPersonButton (addBtnSprite, sprite, iconSprite, person, manager, parents);
+		addParents_ = new LinkPersonButton (addBtnSprite, sprite, iconSprite, person, manager, parents);
 
 		addBtnSprite.setPosition (Vector2f (sprite.getPosition ().x, sprite.getPosition ().y + sprite.getLocalBounds ().height - addBtnSprite.getLocalBounds ().height));
-		addChildren_ = new AddPersonButton (addBtnSprite, sprite, iconSprite, person, manager, children);
+		addChildren_ = new LinkPersonButton (addBtnSprite, sprite, iconSprite, person, manager, children);
 
 		icon_.setPosition (Vector2f (sprite.getPosition ().x, sprite.getPosition ().y + addBtnSprite.getLocalBounds ().height));
 	}
@@ -110,23 +108,26 @@ namespace sf
 
 		wnd->draw (icon_);
 
-		sf::Vector2f mid1 = sf::Vector2f (sprite_.getPosition ().x + sprite_.getLocalBounds ().width / 2.0f, sprite_.getPosition ().y + sprite_.getLocalBounds ().height / 2);
+		sf::Text text;
+		
+
+		sf::Vector2f mid1 = sf::Vector2f (sprite_.getPosition ().x + sprite_.getLocalBounds ().width / 2.0f, sprite_.getPosition ().y + sprite_.getLocalBounds ().height);
 
 		for (auto p : person_->children_)
 		{
-			sf::Vector2f mid2 = sf::Vector2f (p->btnSprite_->getPosition ().x + p->btnSprite_->getLocalBounds ().width / 2.0f, p->btnSprite_->getPosition ().y + p->btnSprite_->getLocalBounds ().height / 2);
+			sf::Vector2f mid2 = sf::Vector2f (p->btnSprite_->getPosition ().x + p->btnSprite_->getLocalBounds ().width / 2.0f, p->btnSprite_->getPosition ().y);
 
-			sf::Vertex line[] = 
-			{
-				sf::Vertex (mid1),
-				sf::Vertex (mid2)
-			};
+			sf::Vector2f size = Vector2f (5, sqrtf ((mid2.y - mid1.y) * (mid2.y - mid1.y) + (mid2.x - mid1.x) * (mid2.x - mid1.x)));
 
-			wnd->draw (line, 2, sf::Lines);
+			sf::RectangleShape shape (size);
+			float angle = atan2f (mid1.x - mid2.x, mid2.y - mid1.y) * 180.0f / 3.1415926f;
+			shape.setOrigin (0, 2.5f);
+			shape.setRotation (angle);
+			shape.setFillColor (Color::Red);
+			shape.setPosition (mid1);
+
+			wnd->draw (shape);
 		}
-
-		
-		
 	}
 
 	PersonButton::~PersonButton ()
@@ -138,5 +139,38 @@ namespace sf
 	Sprite* PersonButton::GetSprite ()
 	{
 		return &sprite_;
+	}
+
+	AddPersonButton::AddPersonButton (Sprite sprite, WindowManager* manager, Sprite addBtnSprite, Sprite iconSprite, Sprite background) :
+		SpriteWnd	  (sprite),
+		manager_	  (manager),
+		addBtnSprite_ (addBtnSprite),
+		iconSprite_   (iconSprite),
+		background_   (background),
+		people_		  ()
+	{
+
+	}
+
+	AddPersonButton::~AddPersonButton ()
+	{
+		for (auto p : people_)
+			delete (p);
+	}
+
+	bool AddPersonButton::OnClick (Event::MouseButtonEvent event)
+	{
+		Person* person = new Person ("", false, 1, nullptr);
+
+		background_.setPosition (sf::Vector2f ());
+
+		PersonButton* btn = new PersonButton (background_, addBtnSprite_, iconSprite_, person, manager_);
+		manager_->AddWindow (btn);
+		btn->IntegrateButtons ();
+		person->btnSprite_ = btn->GetSprite ();
+
+		people_.push_back (person);
+
+		return true;
 	}
 }
