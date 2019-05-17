@@ -9,6 +9,14 @@
 class Person
 {
 public:
+
+	enum state
+	{
+		none,
+		active,
+		passive
+	};
+
 	Person (std::string name, bool dead, float finances = 0.0, Person* spouse = nullptr);
 	~Person ();
 
@@ -35,6 +43,8 @@ public:
     void PrintHerRep();
 	
 	sf::Sprite * btnSprite_;
+
+	state state_;
 
 };
 

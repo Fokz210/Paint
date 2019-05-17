@@ -1,4 +1,4 @@
-#define NOMINMAX
+﻿#define NOMINMAX
 #define BUFF_STRING_SIZE 128
 
 #include <SFML\Graphics.hpp>
@@ -38,11 +38,16 @@ bool run (sf::RenderWindow& window)
 	sf::Font font;
 	font.loadFromFile ("bin//font.ttf");
 
+	btnSprite.setPosition (window.getSize ().x / 2, window.getSize ().y / 2);
+
 	sf::PersonButton button (btnSprite, linkSprite, iconSprite, killSprite, &inheritant, &manager, font);
 	manager.AddWindow (&button);
 	button.IntegrateButtons ();
 	auto lambda1 = [&]() { restart = true; };
 
+	sf::Image icon;
+	icon.loadFromFile ("icon.png");
+	window.setIcon (icon.getSize ().x, icon.getSize ().y, icon.getPixelsPtr ());
 
 	sf::Text text;
 	text.setFont (font);
@@ -65,7 +70,7 @@ bool run (sf::RenderWindow& window)
 	auto calclabmbda = [&]() { calc.UpdateFinances (); };
 
 	text.setString ("CALC");
-	sf::Button  <decltype (calclabmbda)> calcBtn (window.getSize ().x / 2 - addSprite.getLocalBounds ().width / 2, 200, 150, 50, sf::Color::Red, text, calclabmbda);
+	sf::Button  <decltype (calclabmbda)> calcBtn (window.getSize ().x / 2 - addSprite.getLocalBounds ().width / 2, 140, 150, 50, sf::Color::Red, text, calclabmbda);
 	manager.AddWindow (&calcBtn);
 
 	while (window.isOpen ())
@@ -86,7 +91,7 @@ bool run (sf::RenderWindow& window)
 
 int main()
 {
-	sf::RenderWindow window (sf::VideoMode (1366, 768), "INH DEBUG");
+	sf::RenderWindow window (sf::VideoMode (1900,1000), "Inheritance");
 
 	while (run (window));
 

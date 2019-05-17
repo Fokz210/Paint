@@ -127,6 +127,7 @@
     <ClInclude Include="InheritanceCalc.h" />
     <ClInclude Include="Person.h" />
     <ClInclude Include="PersonButton.h" />
+    <ClInclude Include="resource1.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Include\AbstFilter.cpp" />
@@ -161,6 +162,12 @@
     <Xml Include="bin\palette.xml">
       <SubType>Designer</SubType>
     </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Inheritance.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -24,8 +24,14 @@ namespace sf
 	{
 		if (!KOSTYL.p1)
 			KOSTYL = { person_, currentRelatives_ };
-		else if (KOSTYL.r1 == currentRelatives_ || KOSTYL.p1 == person_)
+		else if (KOSTYL.p1 == person_)
 			KOSTYL = {};
+		else if (KOSTYL.r1 == currentRelatives_)
+		{
+			KOSTYL.p1->spouse_ = person_;
+			person_->spouse_ = KOSTYL.p1;
+			KOSTYL = {};
+		}
 		else
 		{
 			if (currentRelatives_ == children)
@@ -117,24 +123,25 @@ namespace sf
 		text.setFont (font_);
 		text.setString (std::to_string ((int)person_->finances_));
 		text.setOrigin (text.getLocalBounds ().width / 2, text.getLocalBounds ().height / 2);
-		text.setPosition (sprite_.getPosition ().x + sprite_.getLocalBounds ().width / 2, sprite_.getPosition ().y + sprite_.getLocalBounds ().height / 2);
+		text.setPosition (sprite_.getPosition ().x + sprite_.getLocalBounds ().width / 2 + 5, sprite_.getPosition ().y + sprite_.getLocalBounds ().height / 3 * 2);
 		text.setFillColor (Color::Magenta);
+		text.setCharacterSize (20);
 
 		wnd->draw (text);
 
 		if (person_->dead_)
 		{
 			text.setString ("DEAD");
-			text.setPosition (text.getPosition ().x + 130, text.getPosition ().y);
+			text.setPosition (text.getPosition ().x + 100, text.getPosition ().y);
 			text.setFillColor (Color::Red);
 			wnd->draw (text);
 		}
 
-		sf::Vector2f mid1 = sf::Vector2f (sprite_.getPosition ().x + sprite_.getLocalBounds ().width / 2.0f, sprite_.getPosition ().y + sprite_.getLocalBounds ().height);
+		sf::Vector2f mid1 = sf::Vector2f (sprite_.getPosition ().x + sprite_.getLocalBounds ().width / 2.0f, sprite_.getPosition ().y + sprite_.getLocalBounds ().height - 10);
 
 		for (auto p : person_->children_)
 		{
-			sf::Vector2f mid2 = sf::Vector2f (p->btnSprite_->getPosition ().x + p->btnSprite_->getLocalBounds ().width / 2.0f, p->btnSprite_->getPosition ().y);
+			sf::Vector2f mid2 = sf::Vector2f (p->btnSprite_->getPosition ().x + p->btnSprite_->getLocalBounds ().width / 2.0f, p->btnSprite_->getPosition ().y + 10);
 
 			sf::Vector2f size = Vector2f (5, sqrtf ((mid2.y - mid1.y) * (mid2.y - mid1.y) + (mid2.x - mid1.x) * (mid2.x - mid1.x)));
 
@@ -147,6 +154,43 @@ namespace sf
 
 			wnd->draw (shape);
 		}
+
+		if (person_->spouse_ && person_->spouse_->state_ == Person::none)
+		{
+			person_->state_ = Person::active;
+			person_->spouse_->state_ = Person::passive;
+		}
+
+		if (person_->spouse_ && person_->state_ == Person::active)
+		{
+	
+			mid1 = sf::Vector2f (sprite_.getPosition ().x + sprite_.getLocalBounds ().width / 2.0f, sprite_.getPosition ().y + sprite_.getLocalBounds ().height / 2.0f);
+
+			sf::Vector2f mid2 = sf::Vector2f (person_->spouse_->btnSprite_->getPosition ().x + person_->spouse_->btnSprite_->getLocalBounds ().width / 2.0f, person_->spouse_->btnSprite_->getPosition ().y + person_->spouse_->btnSprite_->getLocalBounds ().height / 2.0f);
+
+			if (mid1.x > mid2.x)
+			{
+				mid1.x -= person_->spouse_->btnSprite_->getLocalBounds ().width / 2.0f;
+				mid2.x += person_->spouse_->btnSprite_->getLocalBounds ().width / 2.0f;
+			}
+			else
+			{
+				mid2.x -= person_->spouse_->btnSprite_->getLocalBounds ().width / 2.0f;
+				mid1.x += person_->spouse_->btnSprite_->getLocalBounds ().width / 2.0f;
+			}
+
+			sf::Vector2f size = Vector2f (5, sqrtf ((mid2.y - mid1.y) * (mid2.y - mid1.y) + (mid2.x - mid1.x) * (mid2.x - mid1.x)));
+
+			sf::RectangleShape shape (size);
+			float angle = atan2f (mid1.x - mid2.x, mid2.y - mid1.y) * 180.0f / 3.1415926f;
+			shape.setOrigin (0, 2.5f);
+			shape.setRotation (angle);
+			shape.setFillColor (Color::Green);
+			shape.setPosition (mid1);
+
+			wnd->draw (shape);
+		}
+
 	}
 
 	PersonButton::~PersonButton ()
