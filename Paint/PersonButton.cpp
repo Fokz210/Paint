@@ -30,6 +30,7 @@ namespace sf
 		{
 			KOSTYL.p1->spouse_ = person_;
 			person_->spouse_ = KOSTYL.p1;
+
 			KOSTYL = {};
 		}
 		else
