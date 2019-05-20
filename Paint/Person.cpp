@@ -8,7 +8,9 @@ Person::Person (std::string name, bool dead, float finances, Person* spouse) :
 	finances_ (finances),
 	dead_ (dead),
 	btnSprite_ (nullptr),
-	state_ (none)
+	state_ (none),
+	sex_ (Male),
+	all_rels_ ()
 {
 }
 

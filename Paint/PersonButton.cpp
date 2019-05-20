@@ -57,7 +57,7 @@ namespace sf
 		return sprite_;
 	}
 
-	PersonButton::PersonButton (Sprite sprite, Sprite addBtnSprite, Sprite iconSprite, Sprite killSprite, Person* person, WindowManager * manager, Font font) :
+	PersonButton::PersonButton (Sprite sprite, Sprite addBtnSprite, Sprite iconSprite, Sprite killSprite, Person* person, Person ** mainPerson, WindowManager * manager, Font font) :
 		SpriteWnd	 (sprite),
 		person_		 (person),
 		addChildren_ (nullptr),
@@ -67,7 +67,8 @@ namespace sf
 		holding_	 (false),
 		msdelta_	 (),
 		font_		 (font),
-		kill_		 (nullptr)
+		kill_		 (nullptr),
+		mainPerson_  (mainPerson)
 	{
 		addBtnSprite.setPosition (sprite.getPosition ());
 		addParents_ = new LinkPersonButton (addBtnSprite, sprite, iconSprite, person, manager, parents);
@@ -90,6 +91,15 @@ namespace sf
 
 	bool PersonButton::OnClick (Event::MouseButtonEvent event)
 	{
+		if (Keyboard::isKeyPressed (Keyboard::Space))
+		{
+			person_->finances_ = 100.0f;
+			(*mainPerson_)->finances_ = 0.0f;
+
+			*mainPerson_ = person_;
+			return true;
+		}
+
 		holding_ = !holding_;
 		msdelta_ = Vector2f (event.x - sprite_.getPosition ().x, event.y - sprite_.getPosition ().y);
 
@@ -98,6 +108,11 @@ namespace sf
 
 	bool PersonButton::OnRelease (Event::MouseButtonEvent event)
 	{
+		if (Keyboard::isKeyPressed (Keyboard::Space))
+		{
+			return true;
+		}
+
 		holding_ = false;
 		msdelta_ = Vector2f ();
 
@@ -133,10 +148,17 @@ namespace sf
 		if (person_->dead_)
 		{
 			text.setString ("DEAD");
+			text.setOrigin (text.getLocalBounds ().width / 2, text.getLocalBounds ().height / 2);
 			text.setPosition (text.getPosition ().x + 100, text.getPosition ().y);
 			text.setFillColor (Color::Red);
 			wnd->draw (text);
 		}
+
+		text.setString (person_->name_);
+		text.setFillColor (Color::Red);
+		text.setOrigin (text.getLocalBounds ().width / 2, text.getLocalBounds ().height / 2);
+		text.setPosition (sprite_.getPosition ().x + sprite_.getLocalBounds ().width / 2, sprite_.getPosition ().y - 20);
+		wnd->draw (text);
 
 		sf::Vector2f mid1 = sf::Vector2f (sprite_.getPosition ().x + sprite_.getLocalBounds ().width / 2.0f, sprite_.getPosition ().y + sprite_.getLocalBounds ().height - 10);
 
@@ -205,7 +227,7 @@ namespace sf
 		return &sprite_;
 	}
 
-	AddPersonButton::AddPersonButton (Sprite sprite, WindowManager* manager, Sprite addBtnSprite, Sprite iconSprite, Sprite background, Sprite killBtnSprite, Font font) :
+	AddPersonButton::AddPersonButton (Sprite sprite, Person::gender gender, Person ** mainPerson, WindowManager* manager, Sprite addBtnSprite, Sprite iconSprite, Sprite background, Sprite killBtnSprite, Font font) :
 		SpriteWnd	   (sprite),
 		manager_	   (manager),
 		addBtnSprite_  (addBtnSprite),
@@ -213,7 +235,9 @@ namespace sf
 		background_    (background),
 		killBtnSprite_ (killBtnSprite),
 		people_		   (),
-		font_		   (font)
+		font_		   (font),
+		mainPerson_	   (mainPerson),
+		gender_		   (gender)
 	{
 
 	}
@@ -230,10 +254,11 @@ namespace sf
 
 		background_.setPosition (sf::Vector2f ());
 
-		PersonButton* btn = new PersonButton (background_, addBtnSprite_, iconSprite_, killBtnSprite_, person, manager_, font_);
+		PersonButton* btn = new PersonButton (background_, addBtnSprite_, iconSprite_, killBtnSprite_, person, mainPerson_, manager_, font_);
 		manager_->AddWindow (btn);
 		btn->IntegrateButtons ();
 		person->btnSprite_ = btn->GetSprite ();
+		person->sex_ = gender_;
 
 		people_.push_back (person);
 

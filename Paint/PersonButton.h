@@ -2,6 +2,8 @@
 #include "../include/WinManager.h"
 #include "Person.h"
 
+
+
 namespace sf
 {
 	enum relatives
@@ -9,6 +11,7 @@ namespace sf
 		parents,
 		children
 	};
+
 
 	struct __KOSTYL__ADDITIONAL__  //VERY BAD, BUT STILL WORKING
 	{
@@ -48,7 +51,7 @@ namespace sf
 		public SpriteWnd
 	{
 	public:
-						   PersonButton		   (Sprite sprite, Sprite addBtnSprite, Sprite iconSprite, Sprite killSprite, Person * person, WindowManager * manager, sf::Font font);
+						   PersonButton		   (Sprite sprite, Sprite addBtnSprite, Sprite iconSprite, Sprite killSprite, Person * person, Person ** mainPerson, WindowManager * manager, sf::Font font);
 		void			   IntegrateButtons	   ();
 		bool			   OnClick			   (Event::MouseButtonEvent event) override;
 		bool               OnRelease		   (Event::MouseButtonEvent event) override;
@@ -65,13 +68,15 @@ namespace sf
 		sf::Vector2f	   msdelta_;
 		sf::Font		   font_;
 		KillPersonButton*  kill_;
+		Person**		   mainPerson_;
 	};
+
 
 	class AddPersonButton :
 		public SpriteWnd
 	{
 	public:
-							   AddPersonButton	(Sprite sprite, WindowManager* manager, Sprite addBtnSprite, Sprite iconSprite, Sprite background, Sprite killBtnSprite, Font font);
+							   AddPersonButton	(Sprite sprite, Person::gender gender, Person ** mainPerson, WindowManager* manager, Sprite addBtnSprite, Sprite iconSprite, Sprite background, Sprite killBtnSprite, Font font);
 							   ~AddPersonButton ();
 		bool				   OnClick		    (Event::MouseButtonEvent event) override;
 
@@ -79,7 +84,9 @@ namespace sf
 		Sprite				   addBtnSprite_, iconSprite_, background_, killBtnSprite_;
 		std::vector <Person*>  people_;
 		WindowManager	*	   manager_;
-		Font font_;
+		Font				   font_;
+		Person**			   mainPerson_;
+		Person::gender		   gender_; 
 	};
 
 
