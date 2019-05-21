@@ -21,9 +21,41 @@ namespace sf
 	}
 
 	bool LinkPersonButton::OnClick (Event::MouseButtonEvent event)
-	{
+    {
+		if (Keyboard::isKeyPressed (Keyboard::Space))
+		{
+			if (!KOSTYL.p1)
+				KOSTYL = { person_, currentRelatives_, true};
+			else if (KOSTYL.p1 == person_)
+				KOSTYL = {};
+			else if (KOSTYL.r1 == currentRelatives_)
+			{
+				KOSTYL.p1->spouse_ = person_;
+				person_->spouse_ = KOSTYL.p1;
+
+				KOSTYL = {};
+			}
+			else
+			{
+				if (currentRelatives_ == children)
+				{
+					KOSTYL.p1->stepparents_.push_back (person_);
+					person_->stepchildren_.push_back (KOSTYL.p1);
+				}
+				else
+				{
+					KOSTYL.p1->stepchildren_.push_back (person_);
+					person_->stepparents_.push_back (KOSTYL.p1);
+				}
+
+				KOSTYL = {};
+			}
+
+			return true;
+		}
+
 		if (!KOSTYL.p1)
-			KOSTYL = { person_, currentRelatives_ };
+			KOSTYL = { person_, currentRelatives_, false };
 		else if (KOSTYL.p1 == person_)
 			KOSTYL = {};
 		else if (KOSTYL.r1 == currentRelatives_)
@@ -173,6 +205,22 @@ namespace sf
 			shape.setOrigin (0, 2.5f);
 			shape.setRotation (angle);
 			shape.setFillColor (Color::Red);
+			shape.setPosition (mid1);
+
+			wnd->draw (shape);
+		}
+
+		for (auto p : person_->stepchildren_)
+		{
+			sf::Vector2f mid2 = sf::Vector2f (p->btnSprite_->getPosition ().x + p->btnSprite_->getLocalBounds ().width / 2.0f, p->btnSprite_->getPosition ().y + 10);
+
+			sf::Vector2f size = Vector2f (5, sqrtf ((mid2.y - mid1.y) * (mid2.y - mid1.y) + (mid2.x - mid1.x) * (mid2.x - mid1.x)));
+
+			sf::RectangleShape shape (size);
+			float angle = atan2f (mid1.x - mid2.x, mid2.y - mid1.y) * 180.0f / 3.1415926f;
+			shape.setOrigin (0, 2.5f);
+			shape.setRotation (angle);
+			shape.setFillColor (Color::Blue);
 			shape.setPosition (mid1);
 
 			wnd->draw (shape);

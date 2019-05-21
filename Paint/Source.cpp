@@ -98,7 +98,7 @@ bool run (sf::RenderWindow& window)
 
 	while (window.isOpen ())
 	{
-		window.clear (sf::Color::Color (200, 200, 200, 255));
+		window.clear (sf::Color::Color (225, 225, 225, 255));
 
 		manager.Run (&window);
 

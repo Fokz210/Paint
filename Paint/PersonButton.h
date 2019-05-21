@@ -16,7 +16,8 @@ namespace sf
 	struct __KOSTYL__ADDITIONAL__  //VERY BAD, BUT STILL WORKING
 	{
 		Person* p1 = nullptr;
-		relatives r1;
+		relatives r1 = parents;
+		bool step = false;
 	};
 
 	class LinkPersonButton :
