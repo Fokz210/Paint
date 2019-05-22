@@ -450,6 +450,352 @@ void InheritanceCalc::ResetFinances ()
 
 void InheritanceCalc::relateHers ()
 {
+	//MYSELF
+
+	(*person_)->SetRel ("ME");
+
+	// =========================================================
+	// =============== LEVEL ONE ===============================
+	// =========================================================
+
+	if ((*person_)->spouse_)
+	{
+		(*person_)->all_rels_.push_back ((*person_)->spouse_);
+		((*person_)->spouse_->sex_) ? (*person_)->spouse_->SetRel ("WIFE") : (*person_)->spouse_->SetRel ("HUSBAND");
+	}
+
+	if (!(*person_)->parents_.empty ())
+		for (auto p : (*person_)->parents_)
+		{
+			(*person_)->all_rels_.push_back (p);
+			(p->sex_) ? p->SetRel ("MOTHER") : p->SetRel ("FATHER");
+		}
+
+	if (!(*person_)->children_.empty ())
+		for (auto c : (*person_)->children_)
+		{
+			(*person_)->all_rels_.push_back (c);
+			(c->sex_) ? c->SetRel ("DAUGHTER") : c->SetRel ("SON");
+
+			if (!c->children_.empty ())
+			{
+
+				for (auto cc : c->children_)
+				{
+					(*person_)->all_rels_.push_back (cc);
+					(cc->sex_) ? cc->SetRel ("GRANDDAUGHTER") : cc->SetRel ("GRANDSON");
+				}
+			}
+		}
+
+	// =========================================================
+	// =============== LEVEL TWO ===============================
+	// =========================================================
+
+	if (!(*person_)->parents_.empty ())          //brothas & sisters (parent -> children)
+	{
+		for (auto p : (*person_)->parents_)
+		{
+			if (!p->children_.empty ())
+			{
+				for (auto pc : p->children_)
+				{
+					(*person_)->all_rels_.push_back (pc);
+					(pc->sex_) ? pc->SetRel ("SISTER") : pc->SetRel ("BROTHER");
+
+					if (!pc->children_.empty ())
+					{
+
+						for (auto pcc : pc->children_)
+						{
+							(*person_)->all_rels_.push_back (pcc);
+							(pcc->sex_) ? pcc->SetRel ("NIECE") : pcc->SetRel ("NEPHEW");
+						}
+					}
+
+				}
+			}
+		}
+	}
+
+	if (!(*person_)->parents_.empty ())          //grandparents (parent -> parent)
+	{
+		for (auto p : (*person_)->parents_)
+		{
+			if (!p->parents_.empty ())
+			{
+				for (auto pp : p->parents_)
+				{
+					(*person_)->all_rels_.push_back (pp);
+					(pp->sex_) ? pp->SetRel ("GRANDMOTHER") : pp->SetRel ("GRANDFATHER");
+				}
+			}
+		}
+	}
+
+
+	// =========================================================
+	// =============== LEVEL THREE =============================
+	// =========================================================
+
+	if (!(*person_)->parents_.empty ())          //uncles & aunts (parent -> parent -> children)
+	{
+		for (auto p : (*person_)->parents_)
+		{
+			if (!p->parents_.empty ())
+			{
+				for (auto pp : p->parents_)
+				{
+					if (!pp->children_.empty ())
+					{
+						for (auto ppc : pp->children_)
+						{
+							(*person_)->all_rels_.push_back (ppc);
+							(ppc->sex_) ? ppc->SetRel ("AUNT") : ppc->SetRel ("UNCLE");
+
+							if (ppc->dead_ && !ppc->children_.empty ())
+							{
+
+								for (auto ppcc : ppc->children_)
+								{
+									(*person_)->all_rels_.push_back (ppcc);
+									(ppcc->sex_) ? ppcc->SetRel ("COUSIN-F") : ppcc->SetRel ("COUSIN-M");
+								}
+
+							}
+						}
+					}
+
+				}
+			}
+		}
+	}
+
+	// =========================================================
+	// =============== LEVEL FOUR ==============================
+	// =========================================================
+
+
+	if (!(*person_)->parents_.empty ())          //great-grandparents (parent -> parent -> parent)
+	{
+		for (auto p : (*person_)->parents_)
+		{
+			if (!p->parents_.empty ())
+			{
+				for (auto pp : p->parents_)
+				{
+					if (!pp->parents_.empty ())
+					{
+						for (auto ppp : pp->parents_)
+						{
+							(*person_)->all_rels_.push_back (ppp);
+							(ppp->sex_) ? ppp->SetRel ("GREAT-GRANDMOTHER") : ppp->SetRel ("GREAT-GRANDFATHER");
+						}
+					}
+
+				}
+			}
+		}
+	}
+
+	// =========================================================
+	// =============== LEVEL FIVE ==============================
+	// =========================================================
+
+	if (!(*person_)->parents_.empty ())     //great-uncles & -aunts (parent -> parent -> parent -> children)
+	{
+		for (auto p : (*person_)->parents_)
+		{
+			if (!p->parents_.empty ())
+			{
+				for (auto pp : p->parents_)
+				{
+					if (!pp->parents_.empty ())
+					{
+						for (auto ppp : pp->parents_)
+						{
+							if (!ppp->children_.empty ())
+							{
+								for (auto pppc : ppp->children_)
+								{
+									(*person_)->all_rels_.push_back (pppc);
+									(pppc->sex_) ? pppc->SetRel ("GREAT-AUNT [pppc]") : pppc->SetRel ("GREAT-UNCLE [pppc]");
+								}
+							}
+
+						}
+					}
+
+				}
+			}
+		}
+	}
+
+
+
+	if (!(*person_)->parents_.empty ())     //cousin grandsons & daughters (parent -> children -> children -> children)
+	{
+		for (auto p : (*person_)->parents_)
+		{
+			if (!p->children_.empty ())
+			{
+				for (auto pc : p->children_)
+				{
+					if (!pc->children_.empty ())
+					{
+						for (auto pcc : pc->children_)
+						{
+							if (!pcc->children_.empty ())
+							{
+								for (auto pccc : pcc->children_)
+								{
+									(*person_)->all_rels_.push_back (pccc);
+									(pccc->sex_) ? pccc->SetRel ("COUSIN GRANDDAUGHTER") : pccc->SetRel ("COUSIN GRANDSON");
+								}
+							}
+
+						}
+					}
+
+				}
+			}
+		}
+	}
+
+
+	// =========================================================
+	// =============== LEVEL SIX ===============================
+	// =========================================================
+
+	if (!(*person_)->parents_.empty ())     // (parent -> parent -> parent -> children -> children)
+	{
+		for (auto p : (*person_)->parents_)
+		{
+			if (!p->parents_.empty ())
+			{
+				for (auto pp : p->parents_)
+				{
+					if (!pp->children_.empty ())
+					{
+						for (auto ppp : pp->parents_)
+						{
+							if (!ppp->children_.empty ())
+							{
+								for (auto pppc : ppp->children_)
+								{
+									if (!pppc->children_.empty ())
+									{
+										for (auto pppcc : pppc->children_)
+										{
+											(*person_)->all_rels_.push_back (pppcc);
+											(pppcc->sex_) ? pppcc->SetRel ("GREAT-AUNT [pppcc]") : pppcc->SetRel ("GREAT-UNCLE [pppcc]");
+										}
+									}
+								}
+							}
+
+						}
+					}
+
+				}
+			}
+		}
+	}
+
+
+
+	if (!(*person_)->parents_.empty ())     // (parent -> parent -> children -> children -> children)
+	{
+		for (auto p : (*person_)->parents_)
+		{
+			if (!p->parents_.empty ())
+			{
+				for (auto pp : p->parents_)
+				{
+					if (!pp->children_.empty ())
+					{
+						for (auto ppc : pp->children_)
+						{
+							if (!ppc->children_.empty ())
+							{
+								for (auto ppcc : ppc->children_)
+								{
+									if (!ppcc->children_.empty ())
+									{
+										for (auto ppccc : ppcc->children_)
+										{
+											(*person_)->all_rels_.push_back (ppccc);
+											(ppccc->sex_) ? ppccc->SetRel ("GREAT-NIECE") : ppccc->SetRel ("GREAT-NEPHEW");
+										}
+									}
+								}
+							}
+
+						}
+					}
+
+				}
+			}
+		}
+	}
+
+
+	if (!(*person_)->parents_.empty ())     // (parent -> children -> children -> children -> children)
+	{
+		for (auto p : (*person_)->parents_)
+		{
+			if (!p->children_.empty ())
+			{
+				for (auto pc : p->children_)
+				{
+					if (!pc->children_.empty ())
+					{
+						for (auto pcc : pc->children_)
+						{
+							if (!pcc->children_.empty ())
+							{
+								for (auto pccc : pcc->children_)
+								{
+									if (!pccc->children_.empty ())
+									{
+										for (auto pcccc : pccc->children_)
+										{
+											(*person_)->all_rels_.push_back (pcccc);
+											(pcccc->sex_) ? pcccc->SetRel ("GREAT-GRANDDAUGHTER COUSIN") : pcccc->SetRel ("GREAT-GRANDSON COUSIN");
+										}
+									}
+								}
+							}
+
+						}
+					}
+
+				}
+			}
+		}
+	}
+
+	// =========================================================
+	// =============== LEVEL SEVEN =============================
+	// =========================================================
+
+
+	if (!(*person_)->stepparents_.empty ())
+		for (auto sp : (*person_)->stepparents_)
+		{
+			(*person_)->all_rels_.push_back (sp);
+			(sp->sex_) ? sp->SetRel ("STEPMOTHER") : sp->SetRel ("STEPFATHER");
+		}
+
+	if (!(*person_)->stepchildren_.empty ())
+		for (auto sc : (*person_)->stepchildren_)
+		{
+			(*person_)->all_rels_.push_back (sc);
+			(sc->sex_) ? sc->SetRel ("STEPDAUGHTER") : sc->SetRel ("STEPSON");
+		}
+
+	//=============================================================================
+
 	ResetAllNames ();
 
 	//MYSELF
@@ -555,7 +901,7 @@ void InheritanceCalc::relateHers ()
 							(*person_)->all_rels_.push_back (ppc);
 							(ppc->sex_) ? ppc->SetRel ("AUNT") : ppc->SetRel ("UNCLE");
 
-							if (!ppc->children_.empty ())
+							if (ppc->dead_ && !ppc->children_.empty ())
 							{
 
 								for (auto ppcc : ppc->children_)
