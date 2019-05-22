@@ -38,6 +38,42 @@ void Person::PrintHerRep ()
 
 }
 
+void Person::UpdateAllRels (Person * person)
+{
+	if (find (all_rels_, person) >= 0)
+		return;
+
+	for (auto p : person->parents_)
+	{
+		addRel (p);
+		UpdateAllRels (p);
+	}
+
+	for (auto p : person->children_)
+	{
+		addRel (p);
+		UpdateAllRels (p);
+	}
+	
+	for (auto p : person->stepchildren_)
+	{
+		addRel (p);
+		UpdateAllRels (p);
+	}
+
+	for (auto p : person->stepparents_)
+	{
+		addRel (p);
+		UpdateAllRels (p);
+	}
+}
+
+void Person::addRel (Person* rel)
+{
+	if (find (all_rels_, rel) == -1)
+		all_rels_.push_back (rel);
+}
+
 bool Person::NotAddedHer (Person* Check)
 {
 	for (int i = 0; i < heirs_.size (); i++)

@@ -6,6 +6,7 @@
 #include <iostream>
 #include "SFML/Graphics.hpp"
 
+
 class Person
 {
 public:
@@ -72,7 +73,7 @@ public:
 		Twospirit,
 	};
 
-
+	
 
 	Person (std::string name, bool dead, float finances = 0.0, Person* spouse = nullptr);
 	~Person ();
@@ -104,6 +105,11 @@ public:
 	}
 	std::vector <Person*> all_rels_;
     void PrintHerRep();
+
+	void UpdateAllRels (Person * person);
+	void addRel (Person* rel);
+	
+	
 	
 	sf::Sprite * btnSprite_;
 
@@ -111,4 +117,15 @@ public:
 	gender sex_;
 
 };
+
+template <typename T>
+int find (std::vector <T> arr, T object)
+{
+	for (int i = 0; i < arr.size (); i++)
+		if (arr[i] == object)
+			return i;
+	return -1;
+}
+
+
 
