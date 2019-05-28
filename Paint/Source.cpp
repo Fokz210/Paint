@@ -16,6 +16,8 @@ bool run (sf::RenderWindow& window)
 {
 	bool restart = false;
 
+	sf::Color zvet_yayza_drozda (0, 204, 204);
+
 	sf::WindowManager manager;
 
 	sf::Image img1, img2, img3, img4, img5, img6;
@@ -57,10 +59,8 @@ bool run (sf::RenderWindow& window)
 
 	text.setString ("RESTART");
 
-	sf::Button <decltype (lambda1)> bttn (window.getSize ().x - 150, 0, 150, 50, sf::Color::Red, text, lambda1);
+	sf::Button <decltype (lambda1)> bttn (window.getSize ().x - 150, 0, 150, 50, zvet_yayza_drozda, text, lambda1);
 	manager.AddWindow (&bttn);
-
-
 
 	addSprite.setPosition (window.getSize ().x / 2 - addSprite.getLocalBounds ().width - 20, 20);
 	sf::Sprite addSprite2 = addSprite;
@@ -81,24 +81,29 @@ bool run (sf::RenderWindow& window)
 	text.setCharacterSize (20);
 
 	text.setString ("Calc");
-	sf::Button  <decltype (calclabmbda)> calcBtn (window.getSize ().x / 2 - addSprite.getLocalBounds ().width / 2, 140, 150, 60, sf::Color::Red, text, calclabmbda);
+	sf::Button  <decltype (calclabmbda)> calcBtn (window.getSize ().x / 2 - addSprite.getLocalBounds ().width / 2, 140, 150, 60, zvet_yayza_drozda, text, calclabmbda);
 	manager.AddWindow (&calcBtn);
 
 	auto resetFinLambda = [&]() {calc.ResetFinances (); };
 
 	text.setString ("Reset\nFinances");
-	sf::Button  <decltype (resetFinLambda)> rfinBtn (window.getSize ().x / 2 - addSprite.getLocalBounds ().width / 2 + 150 + 20, 140, 150, 60, sf::Color::Red, text, resetFinLambda);
+	sf::Button  <decltype (resetFinLambda)> rfinBtn (window.getSize ().x / 2 - addSprite.getLocalBounds ().width / 2 + 150 + 20, 140, 150, 60, zvet_yayza_drozda, text, resetFinLambda);
 	manager.AddWindow (&rfinBtn);
 
 	auto resetNameLambda = [&]() {calc.relateHers (); };
 
 	text.setString ("Reset\nNames");
-	sf::Button  <decltype (resetNameLambda)> rnmBtn (window.getSize ().x / 2 - addSprite.getLocalBounds ().width / 2 - 150 - 20, 140, 150, 60, sf::Color::Red, text, resetNameLambda);
+	sf::Button  <decltype (resetNameLambda)> rnmBtn (window.getSize ().x / 2 - addSprite.getLocalBounds ().width / 2 - 150 - 20, 140, 150, 60, zvet_yayza_drozda, text, resetNameLambda);
 	manager.AddWindow (&rnmBtn);
+
+	float color = 200;
 
 	while (window.isOpen ())
 	{
-		window.clear (sf::Color::Color (225, 225, 225, 255));
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) color += 0.01;
+		
+
+		window.clear (sf::Color::Color (color, color, color, 255));
 
 		manager.Run (&window);
 
@@ -117,7 +122,7 @@ bool run (sf::RenderWindow& window)
 
 int main()
 {
-	sf::RenderWindow window (sf::VideoMode (sf::VideoMode::getDesktopMode ().width - 50, sf::VideoMode::getDesktopMode ().height - 100), "Inheritance");
+	sf::RenderWindow window (sf::VideoMode (sf::VideoMode::getDesktopMode ().width, sf::VideoMode::getDesktopMode ().height), "Inheritance", sf::Style::Fullscreen);
 
 	while (run (window));
 

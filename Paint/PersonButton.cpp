@@ -123,7 +123,7 @@ namespace sf
 
 	bool PersonButton::OnClick (Event::MouseButtonEvent event)
 	{
-		if (Keyboard::isKeyPressed (Keyboard::Space))
+		if (Mouse::isButtonPressed(Mouse::Right))
 		{
 			person_->finances_ = 100.0f;
 			(*mainPerson_)->finances_ = 0.0f;

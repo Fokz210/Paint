@@ -29,6 +29,12 @@ public:
 			p->name_ = "";
 
 	}
+
+	void SubRels (Person* relative, std::vector <Person*> other_reps);
+	void SubRels (Person* relative);
+
+
+
 protected:
 
 

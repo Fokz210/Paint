@@ -96,6 +96,7 @@ public:
 
     bool NotAddedHer (Person* Check);
     bool NotAddedRep (Person* Check);
+	bool NotAddedRel (Person* Check);
 
 	void SetRel (std::string relative)
 	{

@@ -60,3 +60,13 @@ bool Person::NotAddedRep (Person* Check)
 	}
 	return true;
 }
+
+bool Person::NotAddedRel (Person* Check)
+{
+	for (int i = 0; i < all_rels_.size (); i++)
+	{
+		if (Check == all_rels_[i])
+			return false;
+	}
+	return true;
+}
